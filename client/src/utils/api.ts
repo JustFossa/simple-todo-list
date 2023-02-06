@@ -29,4 +29,12 @@ export const deleteTask = async (id: string, ownerId: string, taskId: string) =>
     const { data } = await api.delete(`/todo/${ownerId}/${id}/tasks/${taskId}`);
     return data;
 }
+export const changeTaskContent = async (id: string, ownerId: string, taskId: string, content: string) => {
+    const { data } = await api.post(`/todo/${ownerId}/${id}/tasks/${taskId}`, { content });
+    return data;
+}
+export const changeCardOrder = async (id: string, ownerId: string, order: any) => {
+    const { data } = await api.post(`/todo/${ownerId}/${id}/order`, order);
+    return data;
+}
 export default api;

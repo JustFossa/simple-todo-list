@@ -9,7 +9,6 @@ export const getBoard = async(req: Request, res: Response, next: NextFunction) =
         if (!board) {
             return next(new ErrorResponse('Board not found', 404));
         }
-        
         res.status(200).json({success: true, data: board});
     } catch (error: any) {
         next(new ErrorResponse(error.message, 500));
@@ -124,6 +123,41 @@ export const changeTaskOrder = async(req: Request, res: Response, next: NextFunc
         board.tasks![type as "doing" | "todo" | "completed"] = tasks[type];
         await board.save();
         
+        res.status(200).json({success: true, data: board});
+    } catch (error: any) {
+        next(new ErrorResponse(error.message, 500));
+    }
+}
+
+export const changeTaskContent = async(req: Request, res: Response, next: NextFunction) => {
+    const {id, ownerId, taskId} = req.params;
+    const {content} = req.body;
+    if(!content) {
+        return next(new ErrorResponse('Content is required', 400));
+    }
+    try {
+        const task = await Task.findOneAndUpdate({_id: taskId, board: id, owner: ownerId}, {content}, {new: true});
+        const board = await Board.findOne({_id: id, owner: ownerId}).populate('tasks.todo').populate('tasks.doing').populate('tasks.completed');
+        if(!task) {
+            return next(new ErrorResponse('Task not found', 404));
+        }
+        res.status(200).json({success: true, data: board});
+    } catch (error: any) {
+        next(new ErrorResponse(error.message, 500));
+    }
+}
+
+export const changeCardOrder = async(req: Request, res: Response, next: NextFunction) => {
+    const {id, ownerId} = req.params;
+    const cards = req.body;
+    if(!cards) {
+        return next(new ErrorResponse('Cards are required', 400));
+    }
+    try {
+        const board = await Board.findOneAndUpdate({_id: id, owner: ownerId}, {cardOrder: cards}, {new: true});
+        if(!board) {
+            return next(new ErrorResponse('Board not found', 404));
+        }
         res.status(200).json({success: true, data: board});
     } catch (error: any) {
         next(new ErrorResponse(error.message, 500));

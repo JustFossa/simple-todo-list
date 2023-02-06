@@ -16,17 +16,19 @@ interface State {
 export const Home = () => {
     const [state, setState] = useState<State | null>(null)
     const [loading, setLoading] = useState(true)
+    const [cardOrder, setCardOrder] = useState<string[]>(["todo", "doing", "completed"])
 
     useEffect(() => {
         getBoard("63dfdd1095db3a77a3881859", "69").then((res) => {
             const {data} = res
             setState(data.tasks)
+            setCardOrder(data.cardOrder)
             setLoading(false)
         })
     }, [])
     return !loading && (
-        <div className="grid grid-cols-3 sm:grid-cols-1 sm:gap-[5%]">
-                <ItemList items={state} />
+        <div className="">
+                <ItemList order={cardOrder} items={state} setOrder={setCardOrder}/>
         </div>        
     )
 }  

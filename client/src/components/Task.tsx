@@ -4,16 +4,24 @@ import { AiFillEdit } from "react-icons/ai"
 import { ImBin2 } from "react-icons/im"
 import {BsThreeDots} from "react-icons/bs"
 import {RxCross2} from "react-icons/rx"
-import { deleteTask } from "../utils/api"
+import { changeTaskContent, deleteTask } from "../utils/api"
 import { ContextMenu } from "./ContextMenu"
 import { ContextMenuItem } from "./ContextMenuItem"
 import { ContextMenuForm } from "./ContextMenuForm"
 export const Task = ({index, item, draggableId, color, setState, state}) => {
     const [open, setOpen] = useState(false)
+    const [content, setContent] = useState(item.content)
 
     const handleDelete = () => {
         deleteTask("63dfdd1095db3a77a3881859", "69", item._id).then(res => {
             setState(res.data.tasks)
+        })
+    }
+    const handleEdit = e => {
+        e.preventDefault()
+        changeTaskContent("63dfdd1095db3a77a3881859", "69", item._id, content).then(res => {
+            setState(res.data.tasks)
+            setOpen(false)
         })
     }
     return (
@@ -28,12 +36,11 @@ export const Task = ({index, item, draggableId, color, setState, state}) => {
                             <>
                             <ContextMenu setOpen={setOpen}>
                                 <ContextMenuItem action={handleDelete}><ImBin2 size={20} className="mr-2" />Delete</ContextMenuItem>
-                                <ContextMenuItem><AiFillEdit size={20} className="mr-2" />Edit</ContextMenuItem>
                                 <ContextMenuItem action={() => {setOpen(false)}}><RxCross2 size={20} className="mr-2" />Close</ContextMenuItem>
                             </ContextMenu>
-                            <ContextMenuForm action={() => {}}>
-                                    <textarea rows={4} className="w-full p-2 resize-none outline-none rounded-md shadow-md"placeholder="Enter a title for this card..." />
-                                    <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-[0.25rem] py-1 px-2">Save</button>
+                            <ContextMenuForm action={handleEdit}>
+                                    <textarea onChange={(e) => {setContent(e.target.value)}} rows={4} className="w-full p-2 resize-none outline-none rounded-md shadow-md"placeholder="Enter a title for this card..." />
+                                    <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white rounded-[0.25rem] py-1 px-2">Save</button>
                             </ContextMenuForm>
                             </>
                         )

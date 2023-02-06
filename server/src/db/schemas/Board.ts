@@ -22,6 +22,11 @@ const BoardSchema = new Schema({
             required: true,
             default: []
         }],
+    },
+    cardOrder: {
+        type: Array,
+        default: ["todo", "doing", "completed"],
+        required: true
     }
     
 })  
